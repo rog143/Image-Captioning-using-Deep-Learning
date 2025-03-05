@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Captioning</title>
+    <script>
+        async function uploadImage() {
+            const imageInput = document.getElementById("imageInput");
+            const preview = document.getElementById("preview");
+            const captionText = document.getElementById("caption");
+
+            if (!imageInput.files.length) return alert("Please select an image!");
+
+            const file = imageInput.files[0];
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const response = await fetch("/generate_caption", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                captionText.textContent = data.caption;
+            } catch (error) {
+                captionText.textContent = "Failed to generate caption.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Image Captioning</h2>
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="uploadImage()">Generate Caption</button>
+    <br>
+    <img id="preview" style="display:none; max-width: 100%; height: auto;">
+    <p id="caption"></p>
+</body>
+</html>
