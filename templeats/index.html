@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Captioning</title>
+  <title>Image Caption Generator</title>
   <style>
     /* General Styles */
     body {
@@ -150,17 +150,42 @@
     });
 
     // Handle caption generation
-    generateBtn.addEventListener('click', function () {
+    generateBtn.addEventListener('click', async function () {
       if (!imageUpload.files[0]) {
         alert('Please upload an image first!');
         return;
       }
 
-      // Simulate caption generation (replace with actual API call)
-      const fakeCaption = "A beautiful sunset over the mountains.";
-      captionResult.textContent = `Generated Caption: ${fakeCaption}`;
-      captionResult.style.display = 'block';
-      captionResult.style.animation = 'slideIn 0.5s ease-in-out';
+      const file = imageUpload.files[0];
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        // Replace with your DeepAI API key
+        const apiKey = '8b6163fd-9beb-467b-a188-7aca03775b72'; // Replace with your actual API key
+
+        // Send the image to DeepAI API
+        const response = await fetch('https://api.deepai.org/api/image-captioning', {
+          method: 'POST',
+          headers: {
+            'api-key': apiKey,
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (data.output) {
+          captionResult.textContent = `Generated Caption: ${data.output}`;
+        } else {
+          captionResult.textContent = 'Failed to generate caption. Please try again.';
+        }
+        captionResult.style.display = 'block';
+        captionResult.style.animation = 'slideIn 0.5s ease-in-out';
+      } catch (error) {
+        console.error('Error:', error);
+        captionResult.textContent = 'An error occurred. Please try again.';
+        captionResult.style.display = 'block';
+      }
     });
   </script>
 </body>
