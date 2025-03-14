@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Page</title>
+    <style>q    
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: backgroundAnimation 10s ease infinite;
+        }
+
+        @keyframes backgroundAnimation {
+            0% { background: linear-gradient(135deg, #6a11cb, #2575fc); }
+            50% { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+            100% { background: linear-gradient(135deg, #6a11cb, #2575fc); }
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            width: 80%;
+            border: 2px solid #007BFF;
+            border-radius: 6px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #333;
+            animation: slideIn 0.5s ease-in-out;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Send Your Data</h1>
+        <form action="/predict" method="POST">
+
+            <label for="inputData">Enter your data:</label>
+            <input type="text" id="inputData" id="message" name="message" required>
+            <button type="submit">Send Data</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const inputData = document.getElementById('inputData').value;
+            const resultDiv = document.getElementById('result');
+
+            try {
+                const response = await fetch('http://your-backend-url/send-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ data: inputData }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                resultDiv.textContent = `Result: ${result.message}`; // Assuming the backend returns a JSON with a 'message' field
+                resultDiv.style.opacity = 1; // Make the result visible
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.style.opacity = 1; // Make the result visible
+            }
+        });
+    </script>
+    
+</body>
+</html>
