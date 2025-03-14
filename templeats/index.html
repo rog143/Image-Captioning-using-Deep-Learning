@@ -161,21 +161,18 @@
       formData.append('image', file);
 
       try {
-        // Replace with your DeepAI API key
-        const apiKey = '8b6163fd-9beb-467b-a188-7aca03775b72'; // Replace with your actual API key
+        // Replace with your Python backend endpoint
+        const backendEndpoint = 'http://localhost:5000/generate-caption';
 
-        // Send the image to DeepAI API
-        const response = await fetch('https://api.deepai.org/api/image-captioning', {
+        // Send the image to your Python backend
+        const response = await fetch(backendEndpoint, {
           method: 'POST',
-          headers: {
-            'api-key': apiKey,
-          },
           body: formData,
         });
 
         const data = await response.json();
-        if (data.output) {
-          captionResult.textContent = `Generated Caption: ${data.output}`;
+        if (data.caption) {
+          captionResult.textContent = `Generated Caption: ${data.caption}`;
         } else {
           captionResult.textContent = 'Failed to generate caption. Please try again.';
         }
