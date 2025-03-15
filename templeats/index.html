@@ -81,6 +81,11 @@
       background: #218838;
     }
 
+    #generate-btn.loading {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
     #caption-result {
       margin-top: 1.5rem;
       font-size: 1.2rem;
@@ -160,6 +165,11 @@
       const formData = new FormData();
       formData.append('image', file);
 
+      // Disable the button and show loading state
+      generateBtn.textContent = 'Generating...';
+      generateBtn.classList.add('loading');
+      generateBtn.disabled = true;
+
       try {
         // Replace with your Python backend endpoint
         const backendEndpoint = 'http://localhost:5000/generate-caption';
@@ -169,6 +179,10 @@
           method: 'POST',
           body: formData,
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
         if (data.caption) {
@@ -182,6 +196,11 @@
         console.error('Error:', error);
         captionResult.textContent = 'An error occurred. Please try again.';
         captionResult.style.display = 'block';
+      } finally {
+        // Re-enable the button and reset its text
+        generateBtn.textContent = 'Generate Caption';
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
       }
     });
   </script>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction Page</title>
-    <style>q    
+    <title>Image Caption Generator</title>
+    <style>
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #6a11cb, #2575fc);
@@ -50,7 +50,7 @@
             color: #555;
         }
 
-        input[type="text"] {
+        input[type="file"] {
             padding: 12px;
             width: 80%;
             border: 2px solid #007BFF;
@@ -58,7 +58,7 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input[type="text"]:focus {
+        input[type="file"]:focus {
             border-color: #0056b3;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
             outline: none;
@@ -113,30 +113,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Send Your Data</h1>
-        <form action="/predict" method="POST">
-
-            <label for="inputData">Enter your data:</label>
-            <input type="text" id="inputData" id="message" name="message" required>
-            <button type="submit">Send Data</button>
+        <h1>Image Caption Generator</h1>
+        <form id="imageForm">
+            <label for="imageUpload">Upload an image:</label>
+            <input type="file" id="imageUpload" name="image" accept="image/*" required>
+            <button type="submit">Generate Caption</button>
         </form>
         <div id="result" class="result"></div>
     </div>
 
     <script>
-        document.getElementById('dataForm').addEventListener('submit', async function(event) {
+        document.getElementById('imageForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the form from submitting the default way
 
-            const inputData = document.getElementById('inputData').value;
+            const imageFile = document.getElementById('imageUpload').files[0];
             const resultDiv = document.getElementById('result');
 
+            if (!imageFile) {
+                resultDiv.textContent = "Please select an image file.";
+                resultDiv.style.opacity = 1;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
             try {
-                const response = await fetch('http://your-backend-url/send-data', {
+                const response = await fetch('http://your-backend-url/predict', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ data: inputData }),
+                    body: formData, // Send the image file as FormData
                 });
 
                 if (!response.ok) {
@@ -144,7 +149,7 @@
                 }
 
                 const result = await response.json();
-                resultDiv.textContent = `Result: ${result.message}`; // Assuming the backend returns a JSON with a 'message' field
+                resultDiv.textContent = `Caption: ${result.caption}`; // Assuming the backend returns a JSON with a 'caption' field
                 resultDiv.style.opacity = 1; // Make the result visible
             } catch (error) {
                 resultDiv.textContent = `Error: ${error.message}`;
@@ -152,6 +157,5 @@
             }
         });
     </script>
-    
 </body>
 </html>
